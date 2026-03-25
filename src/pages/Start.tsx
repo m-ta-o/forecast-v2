@@ -322,18 +322,22 @@ const Start = () => {
 
     setGoalInput(goalInput);
 
-    // Use fast goal-seeking (3 iterations max, 24-month simulations)
-    console.log('Starting fast goal-seeking...');
+    // SKIP GOAL-SEEKING - just use base parameters with adjusted marketing budget
+    console.log('Calculating parameters based on goals...');
 
-    const finalParams = await ReverseCalculator.goalSeek(
-      goalInput,
-      baseParams,
-      (iter, total, achieved, target) => {
-        console.log(`Iteration ${iter}/${total}: Achieved ${achieved.toFixed(0)} vs Target ${target.toFixed(0)}`);
-      }
+    // Simple heuristic: set marketing budget based on revenue goal
+    const estimatedMarketingBudget = Math.min(
+      targetRevenue * 0.3, // 30% of target revenue
+      50000 // Cap at $50K/month
     );
 
-    console.log('Goal-seeking completed. Final parameters:', finalParams);
+    const finalParams = {
+      ...baseParams,
+      monthlyMarketingBudget: estimatedMarketingBudget,
+      organicTrafficMonthly: Math.round(estimatedMarketingBudget * 0.5),
+    };
+
+    console.log('Parameters calculated:', finalParams);
 
     // Generate explanations for why each parameter was calculated
     const capitalLabel = capitalSituation === 'bootstrapped' ? 'Bootstrap ($50K)' :
