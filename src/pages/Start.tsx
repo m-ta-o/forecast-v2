@@ -322,23 +322,18 @@ const Start = () => {
 
     setGoalInput(goalInput);
 
-    // Use simple heuristic instead of slow goal-seeking
-    console.log('Calculating parameters with heuristic formula');
+    // Use fast goal-seeking (3 iterations max, 24-month simulations)
+    console.log('Starting fast goal-seeking...');
 
-    // Simple heuristic: estimate monthly marketing budget needed
-    const targetRevenueMonthly = targetRevenue;
-    const estimatedMarketingBudget = Math.max(
-      baseParams.monthlyMarketingBudget || 10000,
-      targetRevenueMonthly * 0.3 // Rough heuristic: 30% of revenue goal
+    const finalParams = await ReverseCalculator.goalSeek(
+      goalInput,
+      baseParams,
+      (iter, total, achieved, target) => {
+        console.log(`Iteration ${iter}/${total}: Achieved ${achieved.toFixed(0)} vs Target ${target.toFixed(0)}`);
+      }
     );
 
-    const finalParams = {
-      ...baseParams,
-      monthlyMarketingBudget: Math.round(estimatedMarketingBudget),
-      organicTrafficMonthly: Math.round(estimatedMarketingBudget * 0.5),
-    };
-
-    console.log('Heuristic calculation completed. Final parameters:', finalParams);
+    console.log('Goal-seeking completed. Final parameters:', finalParams);
 
     // Generate explanations for why each parameter was calculated
     const capitalLabel = capitalSituation === 'bootstrapped' ? 'Bootstrap ($50K)' :
