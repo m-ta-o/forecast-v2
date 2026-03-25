@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Simulation Model - Calculation Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #ecf0f1;
+            border-left: 4px solid #3498db;
+        }
+
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .formula-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .formula {
+            font-size: 16px;
+            color: #2c3e50;
+            margin: 8px 0;
+        }
+
+        .variable {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .operator {
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .explanation {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 15px 0;
+        }
+
+        .warning {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 12px;
+            margin: 15px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .toc {
+            background: #ecf0f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .toc a {
+            color: #2c3e50;
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+        }
+
+        .toc a:hover {
+            color: #3498db;
+        }
+
+        .flow-diagram {
+            background: white;
+            border: 2px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .flow-box {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        .flow-arrow {
+            font-size: 24px;
+            color: #3498db;
+            display: block;
+            margin: 10px 0;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .metadata {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Business Simulation Model - Calculation Documentation</h1>
+
+        <div class="metadata">
+            <p><strong>Model Version:</strong> 2.0 (Post-Fix)</p>
+            <p><strong>Last Updated:</strong> March 2026</p>
+            <p><strong>Purpose:</strong> Financial forecasting and scenario modeling for supplement e-commerce business</p>
+        </div>
+
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <a href="#overview">1. Model Overview</a>
+            <a href="#parameters">2. Input Parameters</a>
+            <a href="#customer-acquisition">3. Customer Acquisition</a>
+            <a href="#customer-retention">4. Customer Retention & Churn</a>
+            <a href="#revenue">5. Revenue Calculations</a>
+            <a href="#costs">6. Cost Calculations</a>
+            <a href="#profitability">7. Profitability Metrics</a>
+            <a href="#inventory">8. Inventory Management</a>
+            <a href="#cash-flow">9. Cash Flow</a>
+            <a href="#ltv">10. Customer Lifetime Value (LTV)</a>
+            <a href="#key-metrics">11. Key Performance Metrics</a>
+        </div>
+
+        <h2 id="overview">1. Model Overview</h2>
+        <p>This simulation models a supplement e-commerce business across three sales channels (DTC, Retail, Amazon) over a configurable time period. The model calculates monthly results for revenue, costs, profitability, customer metrics, inventory, and cash flow.</p>
+
+        <div class="flow-diagram">
+            <div class="flow-box">Input Parameters</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">Customer Acquisition</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">Purchase Behavior</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">Revenue Calculation</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">Cost Calculation</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">Inventory Management</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">Cash Flow & Metrics</div>
+        </div>
+
+        <h2 id="parameters">2. Input Parameters</h2>
+        <p>The model uses 42 configurable parameters organized into 6 categories:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Parameters</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Product & Manufacturing</td>
+                    <td>Manufacturing cost, pricing, shelf life, batch size, QA costs</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td>Sales Channels</td>
+                    <td>Channel mix, shipping costs, fees, subscription rates</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>Marketing & Customer Acquisition</td>
+                    <td>Budget allocation, traffic, conversion rates, CPC, retention</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td>Inventory & Operations</td>
+                    <td>Starting inventory, reorder levels, waste, fulfillment costs</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>Financial & Overhead</td>
+                    <td>Starting cash, fixed costs, fees, insurance, R&D</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td>Growth & Market</td>
+                    <td>Market growth, seasonality</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Model Assumptions</td>
+                    <td>Units per order, purchase caps, LTV adjustments</td>
+                    <td>4</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="customer-acquisition">3. Customer Acquisition</h2>
+
+        <h3>3.1 Seasonality Adjustment</h3>
+        <div class="formula-box">
+            <div class="formula">
+                seasonalMultiplier = 1 + sin((month - 1) × π/6 + π/6) × (seasonalityFactor - 1)
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Applies seasonal variation to customer acquisition. The sine wave creates peaks in months 1-2 (January-February, New Year resolutions) and months 9-10 (September-October, back-to-school/fall fitness).
+        </div>
+
+        <h3>3.2 Organic Customer Acquisition</h3>
+        <div class="formula-box">
+            <div class="formula">
+                organicTraffic = organicTrafficMonthly × (1 + marketGrowthRate/100)<sup>(month-1)/12</sup>
+            </div>
+            <div class="formula">
+                organicCustomers = organicTraffic × (organicConversionRate/100)
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Organic traffic grows at the market growth rate compounded monthly. Customers are acquired by applying the organic conversion rate to traffic.
+        </div>
+
+        <h3>3.3 Paid Advertising Customers</h3>
+        <div class="formula-box">
+            <div class="formula">
+                dtcAdBudget = monthlyMarketingBudget × (dtcPaidAdSpend/100)
+            </div>
+            <div class="formula">
+                baseCPC = baseCostPerClick
+            </div>
+            <div class="formula">
+                cpcInflation = (1 + cpcAnnualInflation/100)<sup>(month-1)/12</sup>
+            </div>
+            <div class="formula">
+                currentCPC = baseCPC × cpcInflation
+            </div>
+            <div class="formula">
+                paidTraffic = dtcAdBudget / currentCPC
+            </div>
+            <div class="formula">
+                paidCustomers = paidTraffic × (paidAdConversionRate/100)
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> CPC (cost per click) increases over time due to market maturity and competition. Budget is divided by current CPC to get traffic, then conversion rate is applied.
+        </div>
+
+        <h3>3.4 Influencer Marketing Customers</h3>
+        <div class="formula-box">
+            <div class="formula">
+                influencerBudget = monthlyMarketingBudget × (influencerMarketingSpend/100)
+            </div>
+            <div class="formula">
+                influencerCustomers = (influencerBudget / influencerCostPerEngagement) × (influencerConversionRate/100)
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Budget is divided by cost per engagement to get total engagements, then conversion rate is applied to get customers.
+        </div>
+
+        <h3>3.5 Referral Customers</h3>
+        <div class="formula-box">
+            <div class="formula">
+                monthlyReferralRate = customerReferralRate / 100 / 12
+            </div>
+            <div class="formula">
+                referralCustomers = totalCustomers × monthlyReferralRate
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Annual referral rate is converted to monthly, then applied to total customer base. This creates compound growth as customer base increases.
+        </div>
+
+        <h3>3.6 Total New Customers</h3>
+        <div class="formula-box">
+            <div class="formula">
+                newCustomers = (organicCustomers + paidCustomers + influencerCustomers + referralCustomers) × seasonalMultiplier
+            </div>
+        </div>
+
+        <h2 id="customer-retention">4. Customer Retention & Churn</h2>
+
+        <h3>4.1 Monthly Retention Rate</h3>
+        <div class="formula-box">
+            <div class="formula">
+                annualRetentionRate = repeatPurchaseRate / 100
+            </div>
+            <div class="formula">
+                monthlyRetentionRate = annualRetentionRate<sup>1/12</sup>
+            </div>
+            <div class="formula">
+                monthlyChurnRate = 1 - monthlyRetentionRate
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Annual retention rate is converted to monthly using compound rate formula. For example, 90% annual retention = 99.13% monthly retention (0.90<sup>1/12</sup>).
+        </div>
+
+        <h3>4.2 Customer Base Update</h3>
+        <div class="formula-box">
+            <div class="formula">
+                churnedCustomers = totalCustomers × monthlyChurnRate
+            </div>
+            <div class="formula">
+                activeCustomers = totalCustomers - churnedCustomers
+            </div>
+            <div class="formula">
+                totalCustomers = activeCustomers + newCustomers
+            </div>
+        </div>
+
+        <h3>4.3 Purchase Frequency (Probabilistic Model)</h3>
+        <div class="formula-box">
+            <div class="formula">
+                monthlyPurchaseProbability = 1 / purchaseFrequencyMonths
+            </div>
+            <div class="formula">
+                repeatPurchases = activeCustomers × monthlyPurchaseProbability
+            </div>
+            <div class="formula">
+                purchasesThisMonth = newCustomers + repeatPurchases
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Each active customer has a probability of purchasing equal to 1/frequency. For 3-month frequency, each customer has 33.3% chance of buying this month. This is multiplied by total active customers to get expected repeat purchases.
+        </div>
+
+        <h2 id="revenue">5. Revenue Calculations</h2>
+
+        <h3>5.1 Channel Distribution</h3>
+        <div class="formula-box">
+            <div class="formula">
+                dtcPurchases = purchasesThisMonth × (dtcChannelMix/100)
+            </div>
+            <div class="formula">
+                retailPurchases = purchasesThisMonth × (retailChannelMix/100)
+            </div>
+            <div class="formula">
+                amazonPurchases = purchasesThisMonth × (amazonChannelMix/100)
+            </div>
+        </div>
+        <div class="warning">
+            <strong>Validation:</strong> dtcChannelMix + retailChannelMix + amazonChannelMix must equal 100%
+        </div>
+
+        <h3>5.2 Units Sold</h3>
+        <div class="formula-box">
+            <div class="formula">
+                avgUnitsPerOrder = avgUnitsPerOrder (parameter)
+            </div>
+            <div class="formula">
+                dtcUnitsSold = dtcPurchases × avgUnitsPerOrder
+            </div>
+            <div class="formula">
+                retailUnitsSold = retailPurchases × avgUnitsPerOrder
+            </div>
+            <div class="formula">
+                amazonUnitsSold = amazonPurchases × avgUnitsPerOrder
+            </div>
+            <div class="formula">
+                totalUnitsSold = dtcUnitsSold + retailUnitsSold + amazonUnitsSold
+            </div>
+        </div>
+
+        <h3>5.3 Stockout Adjustment</h3>
+        <div class="formula-box">
+            <div class="formula">
+                IF inventory &lt; totalUnitsSold THEN:
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                stockoutRatio = inventory / totalUnitsSold
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                dtcUnitsSold = dtcUnitsSold × stockoutRatio
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                retailUnitsSold = retailUnitsSold × stockoutRatio
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                amazonUnitsSold = amazonUnitsSold × stockoutRatio
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                totalUnitsSold = inventory
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> If inventory runs out, all channels are reduced proportionally based on available inventory. This ensures revenue calculations match actual units that can be sold.
+        </div>
+
+        <h3>5.4 DTC Revenue</h3>
+        <div class="formula-box">
+            <div class="formula">
+                subscriptionPortion = dtcPurchases × (subscriptionAdoptionRate/100)
+            </div>
+            <div class="formula">
+                regularDtcPortion = dtcPurchases - subscriptionPortion
+            </div>
+            <div class="formula">
+                regularRevenue = regularDtcPortion × avgSellingPriceDTC
+            </div>
+            <div class="formula">
+                subscriptionRevenue = subscriptionPortion × avgSellingPriceDTC × (1 - subscriptionDiscountPercentage/100)
+            </div>
+            <div class="formula">
+                shippingCosts = dtcPurchases × dtcShippingCost
+            </div>
+            <div class="formula">
+                dtcRevenue = regularRevenue + subscriptionRevenue - shippingCosts
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> DTC revenue is calculated separately for regular and subscription customers. Shipping costs are per ORDER (not per unit) and deducted from gross revenue.
+        </div>
+
+        <h3>5.5 Retail Revenue</h3>
+        <div class="formula-box">
+            <div class="formula">
+                retailRevenue = retailUnitsSold × avgWholesalePrice
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Retail revenue is based on wholesale price (what YOU receive from retailers), not the retail shelf price.
+        </div>
+
+        <h3>5.6 Amazon Revenue</h3>
+        <div class="formula-box">
+            <div class="formula">
+                amazonRevenue = amazonUnitsSold × avgSellingPriceDTC × (1 - amazonFeePercentage/100)
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Amazon revenue is DTC price minus Amazon's percentage fee (includes FBA fees, referral fees, etc.).
+        </div>
+
+        <h3>5.7 Total Revenue</h3>
+        <div class="formula-box">
+            <div class="formula">
+                totalRevenue = dtcRevenue + retailRevenue + amazonRevenue
+            </div>
+        </div>
+
+        <h2 id="costs">6. Cost Calculations</h2>
+
+        <h3>6.1 Cost of Goods Sold (COGS)</h3>
+        <div class="formula-box">
+            <div class="formula">
+                COGS = totalUnitsSold × avgManufacturingCostPerUnit
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Direct cost of units sold. Based on accrual accounting (recognized when sold, not when manufactured).
+        </div>
+
+        <h3>6.2 Manufacturing & QA Costs</h3>
+        <div class="formula-box">
+            <div class="formula">
+                QA for sold units = ⌈totalUnitsSold / unitsPerBatch⌉ × qualityTestingCost
+            </div>
+            <div class="formula">
+                QA for new inventory = ⌈reorderedUnits / unitsPerBatch⌉ × qualityTestingCost
+            </div>
+            <div class="formula">
+                manufacturingCosts = QA for sold units + QA for new inventory
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> QA testing is performed per batch. Costs are incurred both for current sales and for new inventory purchases. Ceiling function (⌈⌉) rounds up partial batches.
+        </div>
+
+        <h3>6.3 Marketing Costs</h3>
+        <div class="formula-box">
+            <div class="formula">
+                marketingCosts = monthlyMarketingBudget
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Total marketing budget (already allocated to DTC paid ads, influencer marketing, and retail trade marketing).
+        </div>
+
+        <h3>6.4 Fulfillment Costs</h3>
+        <div class="formula-box">
+            <div class="formula">
+                dtcFulfillment = (dtcUnitsSold + amazonUnitsSold) × fulfillmentCostDTC
+            </div>
+            <div class="formula">
+                retailFulfillment = retailUnitsSold × fulfillmentCostRetail
+            </div>
+            <div class="formula">
+                fulfillmentCosts = dtcFulfillment + retailFulfillment
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> DTC and Amazon use same fulfillment cost (pick, pack, ship individual orders). Retail has lower cost (bulk shipments to distributors).
+        </div>
+
+        <h3>6.5 Operational Costs</h3>
+        <div class="formula-box">
+            <div class="formula">
+                rdCosts = totalRevenue × (rdExpensePercentage/100)
+            </div>
+            <div class="formula">
+                warehousingCosts = totalUnitsSold × warehouseCostPerUnit
+            </div>
+            <div class="formula">
+                paymentProcessing = totalRevenue × (paymentProcessingFee/100)
+            </div>
+            <div class="formula">
+                operationalCosts = monthlyFixedCosts + insuranceAndLegalCosts + warehousingCosts + paymentProcessing + rdCosts
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Operational costs include fixed overhead plus variable costs (warehousing, payment processing, R&D).
+        </div>
+
+        <h3>6.6 Total Costs</h3>
+        <div class="formula-box">
+            <div class="formula">
+                totalCosts = COGS + manufacturingCosts + marketingCosts + fulfillmentCosts + operationalCosts
+            </div>
+        </div>
+
+        <h2 id="profitability">7. Profitability Metrics</h2>
+
+        <h3>7.1 Gross Profit</h3>
+        <div class="formula-box">
+            <div class="formula">
+                grossProfit = totalRevenue - COGS - fulfillmentCosts
+            </div>
+            <div class="formula">
+                grossMargin = (grossProfit / totalRevenue) × 100
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Gross profit follows standard accounting: revenue minus direct costs (COGS + fulfillment). Excludes marketing and overhead.
+        </div>
+
+        <h3>7.2 Net Profit</h3>
+        <div class="formula-box">
+            <div class="formula">
+                netProfit = totalRevenue - totalCosts
+            </div>
+            <div class="formula">
+                netMargin = (netProfit / totalRevenue) × 100
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Net profit is revenue minus all costs (COGS, manufacturing, marketing, fulfillment, operational).
+        </div>
+
+        <h2 id="inventory">8. Inventory Management</h2>
+
+        <h3>8.1 Inventory Depletion</h3>
+        <div class="formula-box">
+            <div class="formula">
+                inventory = inventory - totalUnitsSold
+            </div>
+            <div class="formula">
+                monthlyExpirationRate = (expirationWastePercentage/100) / 12
+            </div>
+            <div class="formula">
+                shelfLifeAdjustment = 24 / productShelfLife
+            </div>
+            <div class="formula">
+                adjustedExpirationRate = monthlyExpirationRate × shelfLifeAdjustment
+            </div>
+            <div class="formula">
+                expirationWaste = inventory × adjustedExpirationRate
+            </div>
+            <div class="formula">
+                inventory = inventory - expirationWaste
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Inventory decreases from sales and expiration. Expiration rate adjusts based on shelf life (shorter shelf life = higher monthly waste).
+        </div>
+
+        <h3>8.2 Dynamic Inventory Parameters</h3>
+
+        <h4>Months 1-3: Gradual Transition</h4>
+        <div class="formula-box">
+            <div class="formula">
+                IF salesHistory.length = 0 THEN:
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                dynamicMinInventory = minimumInventoryLevel
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                dynamicReorderQuantity = reorderQuantity
+            </div>
+            <div class="formula">
+                ELSE IF salesHistory.length &lt; 3 THEN:
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                weight = salesHistory.length / 3
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                avgActualSales = average(salesHistory)
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                dynamicMin = avgActualSales × 1.5
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                dynamicReorder = avgActualSales × 3
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                dynamicMinInventory = (minimumInventoryLevel × (1 - weight)) + (dynamicMin × weight)
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                dynamicReorderQuantity = (reorderQuantity × (1 - weight)) + (dynamicReorder × weight)
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> First 3 months gradually blend static parameters with actual sales data. Weight increases from 33% (month 2) to 67% (month 3) to 100% (month 4+).
+        </div>
+
+        <h4>Month 4+: Fully Dynamic</h4>
+        <div class="formula-box">
+            <div class="formula">
+                avgMonthlySales = average(salesHistory)
+            </div>
+            <div class="formula">
+                firstHalfAvg = average(first half of salesHistory)
+            </div>
+            <div class="formula">
+                secondHalfAvg = average(second half of salesHistory)
+            </div>
+            <div class="formula">
+                growthRate = min((secondHalfAvg - firstHalfAvg) / firstHalfAvg, 0.5)
+            </div>
+            <div class="formula">
+                projectedMonthlySales = avgMonthlySales × (1 + growthRate)
+            </div>
+            <div class="formula">
+                dynamicMinInventory = projectedMonthlySales × 1.5
+            </div>
+            <div class="formula">
+                dynamicReorderQuantity = projectedMonthlySales × 3
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> After month 3, inventory levels are based on rolling sales history with growth trend analysis. Growth rate is capped at 50% for safety. Maintains 1.5 months safety stock and reorders 3 months supply.
+        </div>
+
+        <h3>8.3 Reorder Logic</h3>
+        <div class="formula-box">
+            <div class="formula">
+                IF inventory &lt; dynamicMinInventory THEN:
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                unitCost = avgManufacturingCostPerUnit
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                qaCostPerUnit = qualityTestingCost / unitsPerBatch
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                totalUnitCost = unitCost + qaCostPerUnit
+            </div>
+            <div class="formula" style="margin-left: 20px;">
+                reorderCost = dynamicReorderQuantity × totalUnitCost
+            </div>
+            <div class="formula">
+                IF availableCash ≥ reorderCost THEN:
+            </div>
+            <div class="formula" style="margin-left: 40px;">
+                inventory += dynamicReorderQuantity (full reorder)
+            </div>
+            <div class="formula">
+                ELSE IF availableCash ≥ reorderCost × 0.3 THEN:
+            </div>
+            <div class="formula" style="margin-left: 40px;">
+                partialQuantity = floor(availableCash × 0.9 / totalUnitCost)
+            </div>
+            <div class="formula" style="margin-left: 40px;">
+                inventory += partialQuantity (partial reorder)
+            </div>
+            <div class="formula">
+                ELSE:
+            </div>
+            <div class="formula" style="margin-left: 40px;">
+                No reorder (insufficient cash)
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> When inventory drops below minimum, attempt full reorder if cash available. If cash-constrained but at least 30% of needed amount available, do partial reorder using 90% of available cash. Otherwise skip reorder.
+        </div>
+
+        <h2 id="cash-flow">9. Cash Flow</h2>
+
+        <h3>9.1 Operating Cash Flow</h3>
+        <div class="formula-box">
+            <div class="formula">
+                cashOperatingExpenses = manufacturingCosts + marketingCosts + fulfillmentCosts + operationalCosts
+            </div>
+            <div class="formula">
+                operatingCashFlow = totalRevenue - cashOperatingExpenses
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Operating cash flow excludes inventory purchases (separate cash use). Note that COGS is NOT included here to avoid double-counting with inventory purchases.
+        </div>
+        <div class="warning">
+            <strong>IMPORTANT:</strong> COGS is accrual-based (expense when sold). Inventory purchases are cash-based (expense when bought). Including both would double-count inventory costs.
+        </div>
+
+        <h3>9.2 Net Cash Flow</h3>
+        <div class="formula-box">
+            <div class="formula">
+                netCashFlow = operatingCashFlow - inventoryPurchaseCost
+            </div>
+            <div class="formula">
+                cumulativeCashFlow = cumulativeCashFlow + netCashFlow
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Net cash flow is operating cash flow minus inventory purchases. Cumulative cash flow tracks running cash balance.
+        </div>
+
+        <h3>9.3 Working Capital</h3>
+        <div class="formula-box">
+            <div class="formula">
+                inventoryValue = inventory × avgManufacturingCostPerUnit
+            </div>
+            <div class="formula">
+                receivables = totalRevenue × 0.1
+            </div>
+            <div class="formula">
+                workingCapital = inventoryValue + receivables
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Working capital is simplified to inventory value plus estimated receivables (10% of monthly revenue). Does not include accounts payable.
+        </div>
+
+        <h2 id="ltv">10. Customer Lifetime Value (LTV)</h2>
+
+        <h3>10.1 LTV Calculation Methodology</h3>
+        <div class="formula-box">
+            <div class="formula">
+                annualRetentionRate = repeatPurchaseRate / 100
+            </div>
+            <div class="formula">
+                churnRate = 1 - annualRetentionRate
+            </div>
+            <div class="formula">
+                theoreticalLifespanYears = 1 / churnRate
+            </div>
+            <div class="formula">
+                avgCustomerLifespanYears = min(theoreticalLifespanYears, maxCustomerLifespanYears)
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Customer lifespan is inverse of churn rate, capped at maximum realistic value. For example, 10% churn = 10 year theoretical lifespan, capped at 2.5 years.
+        </div>
+
+        <h3>10.2 Purchase Frequency</h3>
+        <div class="formula-box">
+            <div class="formula">
+                purchaseFrequencyPerYear = min(12 / purchaseFrequencyMonths, maxPurchasesPerYear)
+            </div>
+            <div class="formula">
+                lifetimePurchases = avgCustomerLifespanYears × purchaseFrequencyPerYear
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Annual purchase frequency is capped at maximum realistic value. Total lifetime purchases = years × purchases per year.
+        </div>
+
+        <h3>10.3 Weighted Average Order Value</h3>
+        <div class="formula-box">
+            <div class="formula">
+                subscriptionRate = subscriptionAdoptionRate / 100
+            </div>
+            <div class="formula">
+                subscriptionDiscount = subscriptionDiscountPercentage / 100
+            </div>
+            <div class="formula">
+                regularAOV = avgOrderValue × (1 - subscriptionRate)
+            </div>
+            <div class="formula">
+                subscriptionAOV = avgOrderValue × (1 - subscriptionDiscount) × subscriptionRate
+            </div>
+            <div class="formula">
+                weightedAOV = regularAOV + subscriptionAOV
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Blends regular and subscription order values based on adoption rate. Subscription customers pay discounted price.
+        </div>
+
+        <h3>10.4 Final LTV Calculation</h3>
+        <div class="formula-box">
+            <div class="formula">
+                calculatedLTV = weightedAOV × lifetimePurchases
+            </div>
+            <div class="formula">
+                finalLTV = calculatedLTV × ltvConservativeAdjustment
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> LTV is order value × lifetime purchases, then adjusted conservatively (typically 75% of theoretical value) to account for real-world churn variations.
+        </div>
+
+        <h2 id="key-metrics">11. Key Performance Metrics</h2>
+
+        <h3>11.1 Customer Acquisition Cost (CAC)</h3>
+        <div class="formula-box">
+            <div class="formula">
+                CAC = marketingCosts / newCustomers
+            </div>
+        </div>
+
+        <h3>11.2 Average Order Value (AOV)</h3>
+        <div class="formula-box">
+            <div class="formula">
+                totalDirectOrders = dtcPurchases + amazonPurchases
+            </div>
+            <div class="formula">
+                totalDirectRevenue = dtcRevenue + amazonRevenue
+            </div>
+            <div class="formula">
+                AOV = totalDirectRevenue / totalDirectOrders
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> AOV is calculated only for direct channels (DTC + Amazon) since retail uses wholesale pricing.
+        </div>
+
+        <h3>11.3 Return on Ad Spend (ROAS)</h3>
+        <div class="formula-box">
+            <div class="formula">
+                ROAS = totalRevenue / marketingCosts
+            </div>
+        </div>
+
+        <h3>11.4 Inventory Turnover</h3>
+        <div class="formula-box">
+            <div class="formula">
+                beginningInventory = inventory + totalUnitsSold
+            </div>
+            <div class="formula">
+                avgInventory = (beginningInventory + inventory) / 2
+            </div>
+            <div class="formula">
+                inventoryTurnover = (totalUnitsSold / avgInventory) × 12
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Annualized inventory turnover rate. Shows how many times per year inventory is sold and replaced.
+        </div>
+
+        <h3>11.5 LTV:CAC Ratio</h3>
+        <div class="formula-box">
+            <div class="formula">
+                LTV:CAC = customerLifetimeValue / customerAcquisitionCost
+            </div>
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> Key profitability metric. Healthy businesses typically have LTV:CAC ratio of 3:1 or higher.
+        </div>
+
+        <hr style="margin: 40px 0;">
+
+        <div class="metadata">
+            <p><strong>Document Version:</strong> 1.0</p>
+            <p><strong>Model File:</strong> src/utils/EnhancedSimulationEngine.ts</p>
+            <p><strong>Last Verified:</strong> March 2026</p>
+            <p><strong>For Questions:</strong> Contact development team or review source code comments</p>
+        </div>
+    </div>
+</body>
+</html>
