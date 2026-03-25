@@ -148,7 +148,7 @@ const Start = () => {
 
     setIsLoadingSuggestions(true);
     try {
-      const response = await fetch('http://localhost:3001/api/suggest-format', {
+      const response = await fetch('/api/suggest-format', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productDescription }),
@@ -173,7 +173,7 @@ const Start = () => {
         const currency = getCurrencyCode(region);
 
         try {
-          const response = await fetch('http://localhost:3001/api/market-research', {
+          const response = await fetch('/api/market-research', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
