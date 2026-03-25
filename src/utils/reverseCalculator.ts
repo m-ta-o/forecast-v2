@@ -34,8 +34,8 @@ export class ReverseCalculator {
     // Binary search parameters
     let minBudget = 100; // $100/month minimum
     let maxBudget = 500000; // $500K/month maximum
-    const tolerance = 0.05; // 5% tolerance
-    const maxIterations = 10; // Reduced from 20 to prevent long freezes
+    const tolerance = 0.15; // 15% tolerance (increased for faster convergence)
+    const maxIterations = 5; // Reduced to 5 for speed
 
     let bestParams = baseParams;
     let bestResult = 0;

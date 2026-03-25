@@ -314,11 +314,23 @@ const Start = () => {
 
     setGoalInput(goalInput);
 
-    // Use goal-seeking to find parameters that actually achieve the goal
-    console.log('Starting goal-seeking with base params:', baseParams);
-    const finalParams = await ReverseCalculator.goalSeek(goalInput, baseParams);
+    // Use simple heuristic instead of slow goal-seeking
+    console.log('Calculating parameters with heuristic formula');
 
-    console.log('Goal-seeking completed. Final parameters:', finalParams);
+    // Simple heuristic: estimate monthly marketing budget needed
+    const targetRevenueMonthly = targetRevenue;
+    const estimatedMarketingBudget = Math.max(
+      baseParams.monthlyMarketingBudget || 10000,
+      targetRevenueMonthly * 0.3 // Rough heuristic: 30% of revenue goal
+    );
+
+    const finalParams = {
+      ...baseParams,
+      monthlyMarketingBudget: Math.round(estimatedMarketingBudget),
+      organicTrafficMonthly: Math.round(estimatedMarketingBudget * 0.5),
+    };
+
+    console.log('Heuristic calculation completed. Final parameters:', finalParams);
 
     // Generate explanations for why each parameter was calculated
     const capitalLabel = capitalSituation === 'bootstrapped' ? 'Bootstrap ($50K)' :
@@ -776,15 +788,31 @@ const Start = () => {
                   <h2 className="text-sm font-semibold text-amber-900 mb-2">Profit Goal Calculation</h2>
                   <div className="text-xs text-amber-900 space-y-1">
                     <div className="flex justify-between">
-                      <span>Target profit in month {calculatedGoal.targetMonth}:</span>
+                      <span>
+                        {profitGoalType === 'cumulative'
+                          ? `Total profit over ${calculatedGoal.targetMonth} months:`
+                          : `Monthly profit at month ${calculatedGoal.targetMonth}:`}
+                      </span>
                       <span className="font-semibold">${calculatedGoal.targetProfit.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Required revenue to achieve:</span>
+                      <span>
+                        {profitGoalType === 'cumulative'
+                          ? `Monthly revenue needed (average):`
+                          : `Monthly revenue needed:`}
+                      </span>
                       <span className="font-semibold">${calculatedGoal.targetRevenue.toLocaleString()}</span>
                     </div>
+                    {profitGoalType === 'cumulative' && (
+                      <div className="text-xs text-amber-700 mt-2 pt-2 border-t border-amber-200">
+                        <div className="font-medium mb-1">Calculation breakdown:</div>
+                        <div>${calculatedGoal.targetProfit.toLocaleString()} total profit ÷ {calculatedGoal.targetMonth} months = ${Math.round(calculatedGoal.targetProfit / calculatedGoal.targetMonth).toLocaleString()}/month</div>
+                        <div className="mt-1">${Math.round(calculatedGoal.targetProfit / calculatedGoal.targetMonth).toLocaleString()}/month ÷ 25% net margin = ${calculatedGoal.targetRevenue.toLocaleString()}/month revenue</div>
+                        <div className="mt-1 text-amber-600">Total revenue over {calculatedGoal.targetMonth} months: ${(calculatedGoal.targetRevenue * calculatedGoal.targetMonth).toLocaleString()}</div>
+                      </div>
+                    )}
                     <div className="text-xs text-amber-800 mt-2 pt-2 border-t border-amber-200">
-                      Assumes 70% gross margin, 45% operating costs
+                      Assumes 70% gross margin, 45% operating costs (25% net margin)
                     </div>
                   </div>
                 </div>
