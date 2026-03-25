@@ -358,7 +358,7 @@ const Index = () => {
             <div className="grid grid-cols-2 gap-6">
               <BusinessChart
                 title="Revenue by Channel"
-                description="Tracks revenue from three sales channels: DTC (direct-to-consumer online sales at retail price), Retail (wholesale to stores at wholesale price), and Amazon (marketplace sales with referral fees). Each channel has different margins, customer acquisition costs, and fulfillment requirements."
+                description="DTC (retail price) | Retail (wholesale) | Amazon (retail - fees)"
                 data={chartData}
                 lines={[{
                   key: 'dtcRevenue',
@@ -377,7 +377,7 @@ const Index = () => {
               
               <BusinessChart
                 title="Profitability Trend"
-                description="Shows gross profit (revenue minus COGS and fulfillment costs) and net profit (gross profit minus all operating expenses including marketing, overhead, and manufacturing costs). Net profit indicates actual business profitability after all expenses."
+                description="Gross = Revenue - COGS - Fulfillment | Net = Gross - Marketing - OpEx"
                 data={chartData}
                 lines={[{
                   key: 'grossProfit',
@@ -392,7 +392,7 @@ const Index = () => {
               
               <BusinessChart
                 title="Customer Growth"
-                description="Cumulative active customer base over time. Growth comes from new customer acquisition (organic traffic, paid ads, influencer marketing, and referrals) minus churn (customers lost due to retention rate). Uses probabilistic model where each customer has a monthly purchase probability based on purchase frequency."
+                description="Total = Previous + New - Churn | Churn = (1 - Retention Rate) × Active Customers"
                 data={chartData}
                 lines={[{
                   key: 'totalCustomers',
@@ -403,7 +403,7 @@ const Index = () => {
               
               <BusinessChart
                 title="Inventory Management"
-                description="Dynamic inventory tracking with automatic reordering. System monitors inventory levels and reorders when stock falls below minimum threshold (calculated from recent sales velocity). Reorder quantity adapts based on 3-month sales history. Includes stockout prevention that proportionally reduces sales across all channels when inventory runs out. Cash constraints may limit reorder quantities."
+                description="Reorder when: Inventory < Dynamic Min (based on 3-month avg sales × 1.5) | Stockouts reduce sales proportionally"
                 data={chartData}
                 lines={[{
                   key: 'inventory',
@@ -414,7 +414,7 @@ const Index = () => {
               
               <BusinessChart
                 title="Cost Analysis"
-                description="Breakdown of major cost categories: COGS (cost of goods sold - raw materials and manufacturing), Marketing Costs (ad spend across DTC/retail/Amazon channels, influencer partnerships, trade marketing), and Operational Costs (software, facilities, salaries, utilities, insurance, professional services). Helps identify largest expense drivers."
+                description="COGS (materials + manufacturing) | Marketing (ads + influencers + trade) | OpEx (software + facilities + salaries)"
                 data={chartData}
                 lines={[{
                   key: 'cogs',
@@ -433,7 +433,7 @@ const Index = () => {
 
               <BusinessChart
                 title="Cash Flow Analysis"
-                description="Tracks cash movement: Operating Cash Flow (revenue minus operating expenses before inventory purchases), Net Cash Flow (operating CF minus inventory purchases and capital expenditures), and Cash on Hand (cumulative cash balance). Critical for identifying cash crunches, working capital needs, and runway. Negative net CF may limit inventory reorders."
+                description="Operating CF = Revenue - OpEx | Net CF = Operating CF - Inventory Purchases | Cash on Hand = Cumulative Net CF"
                 data={chartData}
                 lines={[{
                   key: 'operatingCashFlow',
