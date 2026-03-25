@@ -265,12 +265,20 @@ const Start = () => {
       }
 
       goalInput = {
-        targetProfit: monthlyProfit, // This is now monthly profit
+        targetProfit: profitGoalType === 'cumulative' ? goalAmount : monthlyProfit,
         targetProfitMonth: targetMonth,
         isProfitCumulative: profitGoalType === 'cumulative',
       };
 
-      const profitReqs = ReverseCalculator.calculateProfitRequirements(goalInput, baseParams);
+      // For revenue calculation, always use monthly profit (what we need per month)
+      const profitReqs = ReverseCalculator.calculateProfitRequirements(
+        {
+          targetProfit: monthlyProfit,
+          targetProfitMonth: targetMonth,
+          isProfitCumulative: profitGoalType === 'cumulative',
+        },
+        baseParams
+      );
       targetRevenue = profitReqs.requiredRevenue;
 
       console.log('Profit goal calculation:', {
