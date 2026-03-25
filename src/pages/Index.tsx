@@ -147,16 +147,49 @@ const Index = () => {
     const targetMonth = goalInput.targetRevenueMonth || goalInput.targetProfitMonth;
     if (!targetMonth || targetMonth > results.monthly.length) return null;
 
-    if (goalInput.targetRevenue) {
-      // Determine goal type:
-      // - Profit goals: targetRevenue is monthly revenue needed at target month
-      // - Revenue goals with isMonthlyGoal=true: targetRevenue is monthly run rate
-      // - Revenue goals with isMonthlyGoal=false/undefined: targetRevenue is monthly average for cumulative goal
+    // Check PROFIT goals first (they also have targetRevenue set as a calculated value)
+    if (goalInput.targetProfit) {
+      const isProfitCumulative = goalInput.isProfitCumulative !== false; // Default to cumulative if not specified
 
-      const isProfitGoal = !!goalInput.targetProfit;
+      if (isProfitCumulative) {
+        // Cumulative profit goal: targetProfit is total profit over targetMonth months
+        const cumulativeProfit = results.monthly
+          .slice(0, targetMonth)
+          .reduce((sum, month) => sum + month.netProfit, 0);
+
+        const cumulativeTarget = goalInput.targetProfit;
+        const percentOfGoal = (cumulativeProfit / cumulativeTarget) * 100;
+
+        return {
+          type: 'profit',
+          target: cumulativeTarget,
+          actual: cumulativeProfit,
+          month: targetMonth,
+          achieved: cumulativeProfit >= cumulativeTarget,
+          percentOfGoal,
+          isProfitCumulative: true,
+        };
+      } else {
+        // Monthly profit run rate: Compare monthly profit at target month vs targetProfit
+        const monthlyProfit = results.monthly[targetMonth - 1]?.netProfit || 0;
+        const targetProfit = goalInput.targetProfit;
+        const percentOfGoal = (monthlyProfit / targetProfit) * 100;
+
+        return {
+          type: 'profit',
+          target: targetProfit,
+          actual: monthlyProfit,
+          month: targetMonth,
+          achieved: monthlyProfit >= targetProfit,
+          percentOfGoal,
+          isProfitCumulative: false,
+        };
+      }
+    } else if (goalInput.targetRevenue) {
+      // Pure revenue goals (no profit target)
       const isMonthlyGoal = goalInput.isMonthlyGoal === true;
 
-      if (isProfitGoal || isMonthlyGoal) {
+      if (isMonthlyGoal) {
         // Monthly revenue goal: Compare monthly revenue at target month vs targetRevenue
         const monthlyRevenue = results.monthly[targetMonth - 1]?.totalRevenue || 0;
         const targetRevenue = goalInput.targetRevenue;
@@ -190,43 +223,6 @@ const Index = () => {
           isMonthlyGoal: false,
         };
       }
-    } else if (goalInput.targetProfit) {
-      const isProfitCumulative = goalInput.isProfitCumulative !== false; // Default to cumulative if not specified
-
-      if (isProfitCumulative) {
-        // Cumulative profit goal: targetProfit is monthly average, multiply by months for total
-        const cumulativeProfit = results.monthly
-          .slice(0, targetMonth)
-          .reduce((sum, month) => sum + month.netProfit, 0);
-
-        const cumulativeTarget = goalInput.targetProfit * targetMonth;
-        const percentOfGoal = (cumulativeProfit / cumulativeTarget) * 100;
-
-        return {
-          type: 'profit',
-          target: cumulativeTarget,
-          actual: cumulativeProfit,
-          month: targetMonth,
-          achieved: cumulativeProfit >= cumulativeTarget,
-          percentOfGoal,
-          isProfitCumulative: true,
-        };
-      } else {
-        // Monthly profit run rate: Compare monthly profit at target month vs targetProfit
-        const monthlyProfit = results.monthly[targetMonth - 1]?.netProfit || 0;
-        const targetProfit = goalInput.targetProfit;
-        const percentOfGoal = (monthlyProfit / targetProfit) * 100;
-
-        return {
-          type: 'profit',
-          target: targetProfit,
-          actual: monthlyProfit,
-          month: targetMonth,
-          achieved: monthlyProfit >= targetProfit,
-          percentOfGoal,
-          isProfitCumulative: false,
-        };
-      }
     }
     return null;
   })() : null;
@@ -251,36 +247,6 @@ const Index = () => {
                     <Sparkles className="h-4 w-4 mr-1" />
                     Guided Setup
                   </Link>
-                </Button>
-                <Button onClick={handleSaveFormulation} variant="outline" size="sm" className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
-                  <Save className="h-4 w-4 mr-1" />
-                  Save
-                </Button>
-                <Select>
-                  <SelectTrigger className="w-48 bg-gray-800 border-gray-700 text-white">
-                    <SelectValue placeholder="Load business model..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
-                    {savedFormulations.map(formulation => <SelectItem key={formulation.id} value={formulation.id.toString()} onClick={() => handleLoadFormulation(formulation)} className="text-white hover:bg-gray-700">
-                        {formulation.name}
-                      </SelectItem>)}
-                    {savedFormulations.length === 0 && <SelectItem value="none" disabled className="text-gray-400">
-                        No saved models
-                      </SelectItem>}
-                  </SelectContent>
-                </Select>
-                <Button onClick={handleExport} variant="outline" size="sm" className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
-                  <Download className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={() => window.open('/calculation-documentation.html', '_blank')}
-                  variant="outline"
-                  size="sm"
-                  className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700"
-                  title="View calculation documentation for auditors"
-                >
-                  <BookOpen className="h-4 w-4 mr-1" />
-                  Calculations
                 </Button>
               </div>
 
