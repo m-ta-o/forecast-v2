@@ -31,11 +31,12 @@ export class ReverseCalculator {
       month: targetMonth
     });
 
-    // Binary search parameters
+    // Fast binary search parameters
     let minBudget = 100; // $100/month minimum
     let maxBudget = 500000; // $500K/month maximum
-    const tolerance = 0.15; // 15% tolerance (increased for faster convergence)
-    const maxIterations = 5; // Reduced to 5 for speed
+    const tolerance = 0.30; // 30% tolerance for speed
+    const maxIterations = 3; // Only 3 iterations for speed
+    const optimizationMonths = 24; // Run 24-month sims during optimization
 
     let bestParams = baseParams;
     let bestResult = 0;
@@ -55,31 +56,38 @@ export class ReverseCalculator {
         organicTrafficMonthly: Math.round(tryBudget * 0.5), // 1 visitor per $2 spent
       };
 
-      // Run ACTUAL simulation
-      const result = EnhancedSimulationEngine.simulate(testParams, targetMonth);
+      // Run ACTUAL simulation - use optimizationMonths for speed during goal-seeking
+      const result = EnhancedSimulationEngine.simulate(testParams, optimizationMonths);
 
       // Calculate what we achieved
       let achieved: number;
       let target: number;
 
+      // During optimization, we run shorter simulations and scale targets
+      const simulationMonths = optimizationMonths;
+
       if (isRevenueGoal) {
         if (isCumulative) {
-          // Cumulative revenue: sum all months up to target
-          achieved = result.monthly.slice(0, targetMonth).reduce((sum, m) => sum + m.totalRevenue, 0);
-          target = (goalInput.targetRevenue || 0) * targetMonth; // targetRevenue is monthly average for cumulative
+          // Cumulative revenue: sum all months in simulation
+          achieved = result.monthly.slice(0, simulationMonths).reduce((sum, m) => sum + m.totalRevenue, 0);
+          // targetRevenue is monthly average, so multiply by simulation length
+          target = (goalInput.targetRevenue || 0) * simulationMonths;
         } else {
-          // Monthly revenue at target month
-          achieved = result.monthly[targetMonth - 1]?.totalRevenue || 0;
+          // Monthly revenue at target month (or last available month)
+          const monthIndex = Math.min(simulationMonths - 1, targetMonth - 1);
+          achieved = result.monthly[monthIndex]?.totalRevenue || 0;
           target = goalInput.targetRevenue || 0;
         }
       } else {
         if (isCumulative) {
-          // Cumulative profit: sum all months up to target
-          achieved = result.monthly.slice(0, targetMonth).reduce((sum, m) => sum + m.netProfit, 0);
-          target = (goalInput.targetProfit || 0) * targetMonth; // targetProfit is monthly average for cumulative
+          // Cumulative profit: sum all months in simulation
+          achieved = result.monthly.slice(0, simulationMonths).reduce((sum, m) => sum + m.netProfit, 0);
+          // targetProfit is TOTAL cumulative, scale down to match simulation length
+          target = (goalInput.targetProfit || 0) * (simulationMonths / targetMonth);
         } else {
-          // Monthly profit at target month
-          achieved = result.monthly[targetMonth - 1]?.netProfit || 0;
+          // Monthly profit at target month (or last available month)
+          const monthIndex = Math.min(simulationMonths - 1, targetMonth - 1);
+          achieved = result.monthly[monthIndex]?.netProfit || 0;
           target = goalInput.targetProfit || 0;
         }
       }
