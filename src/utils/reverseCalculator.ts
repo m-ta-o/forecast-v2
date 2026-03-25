@@ -34,9 +34,9 @@ export class ReverseCalculator {
     // Fast binary search parameters
     let minBudget = 100; // $100/month minimum
     let maxBudget = 500000; // $500K/month maximum
-    const tolerance = 0.30; // 30% tolerance for speed
-    const maxIterations = 3; // Only 3 iterations for speed
-    const optimizationMonths = 24; // Run 24-month sims during optimization
+    const tolerance = 0.50; // 50% tolerance - very lenient for speed
+    const maxIterations = 1; // Only 1 iteration for instant results
+    const optimizationMonths = 12; // Run 12-month sims during optimization (faster)
 
     let bestParams = baseParams;
     let bestResult = 0;
@@ -44,6 +44,9 @@ export class ReverseCalculator {
 
     // Helper to yield to UI thread
     const delay = () => new Promise(resolve => setTimeout(resolve, 0));
+
+    console.log('🎯 Starting goal-seeking optimization...');
+    console.log(`Target: $${goalInput.targetRevenue?.toLocaleString() || goalInput.targetProfit?.toLocaleString()} over ${targetMonth} months`);
 
     while (iteration < maxIterations) {
       const tryBudget = (minBudget + maxBudget) / 2;
@@ -70,8 +73,9 @@ export class ReverseCalculator {
         if (isCumulative) {
           // Cumulative revenue: sum all months in simulation
           achieved = result.monthly.slice(0, simulationMonths).reduce((sum, m) => sum + m.totalRevenue, 0);
-          // targetRevenue is monthly average, so multiply by simulation length
-          target = (goalInput.targetRevenue || 0) * simulationMonths;
+          // Scale the target proportionally: if goal is $5M over 60mo, target is $1M over 12mo
+          target = (goalInput.targetRevenue || 0) * (simulationMonths / targetMonth);
+          console.log(`Scaled target: $${target.toLocaleString()} (${simulationMonths}mo / ${targetMonth}mo of original $${(goalInput.targetRevenue || 0).toLocaleString()})`);
         } else {
           // Monthly revenue at target month (or last available month)
           const monthIndex = Math.min(simulationMonths - 1, targetMonth - 1);
